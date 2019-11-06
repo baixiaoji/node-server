@@ -8,6 +8,7 @@ import * as mime from 'mime';
 
 const server = http.createServer();
 const publicPath = p.resolve(__dirname, './public');
+const cacheTime = 3600 * 24 * 30;
 server.on('request', (request: IncomingMessage, response: ServerResponse) => {
     const { method, url:path } = request;
     const {pathname} = url.parse(path);
@@ -23,6 +24,7 @@ server.on('request', (request: IncomingMessage, response: ServerResponse) => {
     fs.readFile(p.resolve(publicPath,  fileName), (err, data) => {
         const fileType = mime.getType(fileName.split('.')[1]);
         response.setHeader('Content-Type', fileType);
+        response.setHeader('Cache-Control', cacheTime);
         if (err) {
             if (err.errno === -2) {
                 response.statusCode = 404;
