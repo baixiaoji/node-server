@@ -9,19 +9,24 @@ import * as mime from 'mime';
 const server = http.createServer();
 const publicPath = p.resolve(__dirname, './public');
 server.on('request', (request: IncomingMessage, response: ServerResponse) => {
-    const { url:path } = request;
+    const { method, url:path } = request;
     const {pathname} = url.parse(path);
+    if (method !== 'GET') {
+        response.statusCode = 405;
+        response.end('服务器繁忙');
+        return;
+    }
     let fileName = pathname.slice(1);
     if (fileName === '') {
         fileName = 'index.html'
     }
     fs.readFile(p.resolve(publicPath,  fileName), (err, data) => {
         const fileType = mime.getType(fileName.split('.')[1]);
+        response.setHeader('Content-Type', fileType);
         if (err) {
             if (err.errno === -2) {
                 response.statusCode = 404;
                 fs.readFile(p.resolve(publicPath, '404.html'), (err, data) => {
-                    response.setHeader('Content-Type', fileType);
                     response.end(data);
                 })
             } else {
@@ -30,7 +35,6 @@ server.on('request', (request: IncomingMessage, response: ServerResponse) => {
             }
             return;
         }
-        response.setHeader('Content-Type', fileType);
         response.end(data);
     })
 });
