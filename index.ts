@@ -14,19 +14,19 @@ module.exports.kickOff = ({port = '8080', cache, dir = '.'}:IArgs) => {
     const cacheTime = cache || 3600 * 24 * 30;
     server.on('request', (request: IncomingMessage, response: ServerResponse) => {
         const { method, url:path } = request;
-        const {pathname} = url.parse(path);
+        const {pathname} = url.parse(path as string);
         if (method !== 'GET') {
             response.statusCode = 405;
             response.end('服务器繁忙');
             return;
         }
-        let fileName = pathname.slice(1);
+        let fileName = (<string>pathname).slice(1);
         if (fileName === '') {
             fileName = 'index.html'
         }
         fs.readFile(p.resolve(publicPath,  fileName), (err, data) => {
             const fileType = mime.getType(fileName.split('.')[1]);
-            response.setHeader('Content-Type', fileType);
+            response.setHeader('Content-Type', fileType as string);
             response.setHeader('Cache-Control', cacheTime);
             if (err) {
                 if (err.errno === -2) {

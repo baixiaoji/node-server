@@ -1,8 +1,12 @@
 {
-  "name": "node-server",
+  "name": "tiny-static-server-cli",
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
+  "bin": {
+    "server": "dist/cli.js"
+  },
+  "files": ["dist/*.js"],
   "devDependencies": {
     "@types/mime": "^2.0.1",
     "@types/node": "^12.12.5"
